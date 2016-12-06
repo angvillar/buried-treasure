@@ -44,12 +44,8 @@ class Player(object):
         self.__rect = self.__surface.get_rect()
         self.x = x
         self.y = y
-        self.__rotation_angle = -90
+        self.__rotation_angle = 0
         self.__surface_rotated = pygame.transform.rotate(self.__surface, self.__rotation_angle)
-
-    def __set_dir(self):
-        angle = math.radians(self.__rotation_angle + 90)
-        self.__dir = pygame.math.Vector2(math.cos(angle), math.sin(angle))
 
     def move(self):
         self.__rect.move_ip(self.x - self.__rect.w / 2, self.y - self.__rect.h / 2)
@@ -58,9 +54,16 @@ class Player(object):
         if event.type == KEYDOWN:
             if event.key == pygame.K_w:
                 self.__rotation_angle += 15
+            if event.key == pygame.K_s:
+                self.__rotation_angle -= 15
+            if event.key == pygame.K_SPACE:
+                angle = math.radians(self.__rotation_angle)
+                direction = pygame.math.Vector2(math.cos(angle), math.sin(angle)).normalize()
+                self.x += direction.x * 10
+                self.y += direction.y * 10
 
     def update(self):
-        self.__surface_rotated = pygame.transform.rotate(self.__surface, self.__rotation_angle)
+        self.__surface_rotated = pygame.transform.rotate(self.__surface, -self.__rotation_angle -90)
         self.__rect = self.__surface_rotated.get_rect()
         self.move()
 
@@ -82,7 +85,7 @@ angle = math.degrees(angle)
 
 rotated_surface = pygame.transform.rotate(player_surface, -angle - 90)
 
-player = Player(100, 100)
+player = Player(600, 300)
 
 if __name__ == '__main__':
     while True:
