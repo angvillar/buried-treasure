@@ -48,7 +48,10 @@ class Player(object):
         self.__surface_rotated = pygame.transform.rotate(self.__surface, self.__rotation_angle)
 
     def move(self):
-        self.__rect.move_ip(self.x - self.__rect.w / 2, self.y - self.__rect.h / 2)
+        x = self.x - self.__rect.w / 2
+        y = self.y - self.__rect.h / 2
+        self.__rect.move_ip(x, y)
+        # self.points.append((x, y))
 
     def handle_input(self, event):
         if event.type == KEYDOWN:
@@ -68,7 +71,23 @@ class Player(object):
         self.move()
 
     def draw(self):
+        # draw path
+        # pygame.draw.lines(screen, COLOR_RED, False, self.points, 5)
+        # draw image
         screen.blit(self.__surface_rotated, self.__rect)
+
+    def draw_rect_bounding(self):
+        min_x = self.__rect.x
+        min_y = self.__rect.y
+        max_x = min_x + self.__rect.w
+        max_y = min_y + self.__rect.h
+
+        pygame.draw.lines(screen, COLOR_RED, True, [
+          (min_x, min_y),
+          (max_x, min_y),
+          (max_x, max_y),
+          (min_x, max_y)
+        ])
 
 # set up the player
 player_surface = pygame.image.load(os.path.join(ASSETS_BASE_DIR, 'player.png')).convert_alpha()
@@ -98,8 +117,8 @@ if __name__ == '__main__':
         player.update()
 
         screen.fill(COLOR_BROWN)
-        # screen.blit(rotated_surface, player_rect)
         player.draw()
+        player.draw_rect_bounding()
 
         pygame.display.update()
 
