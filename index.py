@@ -47,11 +47,13 @@ class Player(object):
         self.__rotation_angle = 0
         self.__surface_rotated = pygame.transform.rotate(self.__surface, self.__rotation_angle)
 
+        self.__brush_surface = pygame.image.load(os.path.join(ASSETS_BASE_DIR, 'brush.png')).convert_alpha()
+        self.__brush_rect = self.__brush_surface.get_rect()
+
     def move(self):
         x = self.x - self.__rect.w / 2
         y = self.y - self.__rect.h / 2
         self.__rect.move_ip(x, y)
-        # self.points.append((x, y))
 
     def handle_input(self, event):
         if event.type == KEYDOWN:
@@ -71,10 +73,12 @@ class Player(object):
         self.move()
 
     def draw(self):
-        # draw path
-        # pygame.draw.lines(screen, COLOR_RED, False, self.points, 5)
-        # draw image
+        screen.blit(self.__brush_surface, (
+            self.x - self.__brush_rect.w / 2,
+            self.y - self.__brush_rect.h / 2
+        ))
         screen.blit(self.__surface_rotated, self.__rect)
+
 
     def draw_rect_bounding(self):
         min_x = self.__rect.x
@@ -89,20 +93,22 @@ class Player(object):
           (min_x, max_y)
         ])
 
+
+
 # set up the player
-player_surface = pygame.image.load(os.path.join(ASSETS_BASE_DIR, 'player.png')).convert_alpha()
-player_rect = player_surface.get_rect()
-player_rect.move_ip(200, 300)
-player_dir = pygame.math.Vector2(player_rect.x, player_rect.y)
+# player_surface = pygame.image.load(os.path.join(ASSETS_BASE_DIR, 'player.png')).convert_alpha()
+# player_rect = player_surface.get_rect()
+# player_rect.move_ip(200, 300)
+# player_dir = pygame.math.Vector2(player_rect.x, player_rect.y)
 
 # set up target position where player should look at at beginning
-target_pos = pygame.math.Vector2(SCREEN_WIDTH_HALF, SCREEN_HEIGHT_HALF)
+# target_pos = pygame.math.Vector2(SCREEN_WIDTH_HALF, SCREEN_HEIGHT_HALF)
 
 # work the angle
-angle = math.atan2(target_pos.y - player_rect.centery, target_pos.x - player_rect.centerx)
-angle = math.degrees(angle)
+# angle = math.atan2(target_pos.y - player_rect.centery, target_pos.x - player_rect.centerx)
+# angle = math.degrees(angle)
 
-rotated_surface = pygame.transform.rotate(player_surface, -angle - 90)
+# rotated_surface = pygame.transform.rotate(player_surface, -angle - 90)
 
 player = Player(600, 300)
 
@@ -118,7 +124,7 @@ if __name__ == '__main__':
 
         screen.fill(COLOR_BROWN)
         player.draw()
-        player.draw_rect_bounding()
+        # player.draw_rect_bounding()
 
         pygame.display.update()
 
