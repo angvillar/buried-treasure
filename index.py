@@ -37,6 +37,19 @@ ROWS_NUM = 24
 # set up assets base dir
 ASSETS_BASE_DIR = 'assets/dst/'
 
+# set up the terrains
+terrain_0_surface = pygame.image.load(os.path.join(ASSETS_BASE_DIR, 'terrain-0.png')).convert_alpha()
+terrain_1_surface = pygame.image.load(os.path.join(ASSETS_BASE_DIR, 'terrain-1.png')).convert_alpha()
+
+def blit_mask(source, dest, destpos, mask, maskrect):
+    """
+    Blit an source image to the dest surface, at destpos, with a mask, using
+    only the maskrect part of the mask.
+    """
+    tmp = source.copy()
+    tmp.blit(mask, maskrect.topleft, maskrect, special_flags=pygame.BLEND_RGBA_MULT)
+    dest.blit(tmp, destpos, dest.get_rect().clip(maskrect))
+
 class Player(object):
 
     def __init__(self, x = 0, y = 0):
@@ -47,8 +60,8 @@ class Player(object):
         self.__rotation_angle = 0
         self.__surface_rotated = pygame.transform.rotate(self.__surface, self.__rotation_angle)
 
-        self.__brush_surface = pygame.image.load(os.path.join(ASSETS_BASE_DIR, 'brush.png')).convert_alpha()
-        self.__brush_rect = self.__brush_surface.get_rect()
+        self.__mask_surface = pygame.image.load(os.path.join(ASSETS_BASE_DIR, 'mask.png')).convert_alpha()
+        self.__mask_rect = self.__mask_surface.get_rect()
 
     def move(self):
         x = self.x - self.__rect.w / 2
@@ -73,10 +86,14 @@ class Player(object):
         self.move()
 
     def draw(self):
-        screen.blit(self.__brush_surface, (
-            self.x - self.__brush_rect.w / 2,
-            self.y - self.__brush_rect.h / 2
+        '''
+        screen.blit(self.__mask_surface, (
+            self.x - self.__mask_rect.w / 2,
+            self.y - self.__mask_rect.h / 2
         ))
+        '''
+        pos = (self.x - self.__rect.w / 2, self.y - self.__rect.h / 2)
+        blit_mask(terrain_0_surface, terrain_1_surface, pos, self.__mask_surface, self.__rect)
         screen.blit(self.__surface_rotated, self.__rect)
 
 
@@ -113,6 +130,7 @@ class Player(object):
 player = Player(600, 300)
 
 if __name__ == '__main__':
+
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -122,7 +140,8 @@ if __name__ == '__main__':
 
         player.update()
 
-        screen.fill(COLOR_BROWN)
+        screen.blit(terrain_0_surface, (0, 0))
+        screen.blit(terrain_1_surface, (0, 0))
         player.draw()
         # player.draw_rect_bounding()
 
